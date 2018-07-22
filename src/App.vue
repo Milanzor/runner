@@ -4,10 +4,9 @@
         <!-- Top toolbar -->
         <v-toolbar
                 :clipped-left="$vuetify.breakpoint.lgAndUp"
-                color="blue darken-3"
+                color="blue"
                 dark
                 app
-                fixed
                 flat
         >
             <v-toolbar-title>
@@ -17,69 +16,34 @@
         </v-toolbar>
 
         <!-- Nav drawer -->
-        <v-navigation-drawer
-                :clipped="$vuetify.breakpoint.lgAndUp"
-                v-model="drawer"
-                fixed
-                app
-        >
-            <v-list dense>
-                <template v-for="item in items">
-                    <v-list-tile :key="item.text" @click="">
-                        <v-list-tile-action>
-                            <v-icon>{{ item.icon }}</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>
-                                {{ item.text }}
-                            </v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                </template>
-            </v-list>
-        </v-navigation-drawer>
+        <Sidebar :drawer="drawer" @runnerSelected="activateRunner"/>
 
-        <!-- Content -->
-        <v-content>
-            <v-container fluid>
-                asd
-            </v-container>
-        </v-content>
+        <!-- Runner -->
+        <Runner/>
 
         <!-- Loader -->
-        <v-layout row justify-center>
-            <v-dialog v-model="loading" persistent fullscreen content-class="loading-dialog" transition="v-fade-transition">
-                <v-container fill-height>
-                    <v-layout row justify-center align-center>
-                        <v-progress-circular indeterminate :size="100" :width="10" color="purple"></v-progress-circular>
-                    </v-layout>
-                </v-container>
-            </v-dialog>
-        </v-layout>
+        <Loader :show="loading"/>
     </v-app>
 </template>
 
 <script>
+    import Loader from "./components/Loader";
+    import Sidebar from "./components/Sidebar";
+    import Runner from "./components/Runner";
+
     export default {
+        components: {Runner, Sidebar, Loader},
         data: () => ({
             drawer: true,
-            loading: false,
-            items: [
-                {icon: 'label', text: 'Contacts'},
-                {icon: 'label', text: 'Frequently contacted'},
-                {icon: 'label', text: 'Duplicates'},
-                {icon: 'label', text: 'Settings'},
-                {icon: 'label', text: 'Send feedback'},
-                {icon: 'label', text: 'Help'},
-                {icon: 'label', text: 'App downloads'},
-                {icon: 'label', text: 'Go to the old version'}
-            ]
-        })
+            loading: true,
+        }),
+        mounted() {
+            setTimeout(() => this.loading = false, 500);
+        },
+        methods: {
+            activateRunner(runner) {
+                console.log(runner);
+            }
+        }
     };
 </script>
-
-<style>
-    .loading-dialog {
-        background-color: white;
-    }
-</style>
