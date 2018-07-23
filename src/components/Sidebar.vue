@@ -3,6 +3,7 @@
             clipped
             fixed
             app
+            v-model="drawer"
     >
         <v-list dense>
             <template v-for="item in items">
@@ -16,7 +17,7 @@
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-divider></v-divider>
+                <v-divider :key="`divider-${item.id}`"></v-divider>
             </template>
         </v-list>
     </v-navigation-drawer>
