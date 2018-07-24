@@ -9,22 +9,11 @@
                             <v-flex xs12 sm6>
                                 <v-card-actions>
                                     <div class="text-xs-center">
-                                        <v-chip>{{runner.id}}</v-chip>
+                                        <v-chip>{{runner_id}}</v-chip>
                                     </div>
                                     <div class="text-xs-center">
                                         <v-chip>{{runner.path}}</v-chip>
                                     </div>
-                                </v-card-actions>
-                            </v-flex>
-                            <v-flex xs12 sm6>
-                                <v-card-actions class="justify-end">
-                                    <v-icon
-                                            slot="activator"
-                                            :color="runner.active ? `green` : `red`"
-                                            @click="runnerToggle"
-                                    >
-                                        power_settings_new
-                                    </v-icon>
                                 </v-card-actions>
                             </v-flex>
                         </v-layout>
@@ -43,16 +32,17 @@
     export default {
         name: 'Runner',
         props: {
-            runner: Object
+            runner: Object,
+            runner_id: String
         },
         data() {
             return {};
         },
         methods: {
-            runnerToggle() {
-                this.runner.active = !this.runner.active;
-                this.$emit('runnerToggle', [this.runner, this.runner.active]);
-            }
+            // runnerToggle() {
+            //     this.runner.active = !this.runner.active;
+            //     this.$emit('runnerToggle', [this.runner, this.runner.active]);
+            // }
         }
     };
 </script>

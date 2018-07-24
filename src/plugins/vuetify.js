@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
-import colors from "vuetify/es5/util/colors";
+import colors from 'vuetify/es5/util/colors';
+import VueSocketio from 'vue-socket.io';
 
 Vue.use(Vuetify, {
     theme: {
@@ -14,3 +15,5 @@ Vue.use(Vuetify, {
         success: colors.green.base
     }
 });
+
+Vue.use(VueSocketio, `${window.location.protocol}//${window.location.hostname}:4999`);

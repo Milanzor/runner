@@ -19,22 +19,11 @@
         <Sidebar :drawer="drawer" :runners="runners" @runnerSelected="runnerSelected"/>
 
         <!-- Runner -->
-        <Runner :runner="runner" v-if="runner.id"/>
+        <Runner :runner="runner" :runner_id="runner_id" v-if="runner_id"/>
 
         <!-- Placeholder for no runner -->
-        <v-content v-else>
-            <v-container fluid>
-                <v-layout>
-                    <v-flex xs12>
-                        <v-card>
-                            <v-card-text class="text-xs-center">
-                                Select a Runner
-                            </v-card-text>
-                        </v-card>
-                    </v-flex>
-                </v-layout>
-            </v-container>
-        </v-content>
+        <NoRunnerPlaceholder v-else></NoRunnerPlaceholder>
+
         <!-- Loader -->
         <Loader :show="loading"/>
     </v-app>
@@ -44,41 +33,32 @@
     import Loader from './components/Loader';
     import Sidebar from './components/Sidebar';
     import Runner from './components/Runner';
+    import NewComponent from './components/NoRunnerPlaceholder';
 
     export default {
-        components: {Runner, Sidebar, Loader},
+        components: {NewComponent, Runner, Sidebar, Loader},
         data() {
             return {
-                runners: [
-                    {
-                        id: '@milanzor/runner',
-                        path: '/srv/vhosts/dev/milan.hw/',
-                        active: true,
-                        log: [
-                            'Lipsum '
-                        ]
-                    },
-                    {
-                        id: '@notquitezen/c3i',
-                        path: '/srv/vhosts/dev/milan.hw/',
-                        active: false,
-                        log: [
-                            'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
-                        ]
-                    }
-                ],
+                runners: {},
                 runner: {},
+                runner_id: false,
                 drawer: true,
                 loading: true
             };
         },
         methods: {
-            runnerSelected(runner) {
+            runnerSelected(runner, runner_id) {
                 this.runner = runner;
+                this.runner_id = runner_id;
             }
         },
         mounted() {
             setTimeout(() => this.loading = false, 300);
+        },
+        sockets: {
+            'runner-list'(runners) {
+                this.runners = runners;
+            }
         }
     };
 </script>

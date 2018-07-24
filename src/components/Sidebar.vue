@@ -6,23 +6,23 @@
             v-model="drawer"
     >
         <v-list dense>
-            <template v-for="runner in runners">
+            <template v-for="(runner, runner_id) in runners">
                 <v-list-tile
-                        :key="runner.id"
+                        :key="runner_id"
                         ripple
-                        @click="runnerSelected(runner)"
-                        :class="{accent: activeRunnerId === runner.id, 'white--text': activeRunnerId === runner.id}"
+                        @click="runnerSelected(runner, runner_id)"
+                        :class="{accent: active_runner_id === runner_id, 'white--text': active_runner_id === runner_id}"
                 >
                     <v-list-tile-action>
-                        <v-icon :color="runner.active ? `green` : `red`">label</v-icon>
+                        <v-icon >label</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>
-                            {{ runner.id }}
+                            {{ runner_id }}
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-divider :key="`divider-${runner.id}`"></v-divider>
+                <v-divider :key="`divider-${runner_id}`"></v-divider>
             </template>
         </v-list>
     </v-navigation-drawer>
@@ -32,17 +32,17 @@
         name: 'Sidebar',
         data() {
             return {
-                activeRunnerId: null
+                active_runner_id: null
             };
         },
         props: {
             drawer: Boolean,
-            runners: Array
+            runners: Object
         },
         methods: {
-            runnerSelected(runner) {
-                this.$emit('runnerSelected', runner);
-                this.activeRunnerId = runner.id;
+            runnerSelected(runner, runner_id) {
+                this.$emit('runnerSelected', runner, runner_id);
+                this.active_runner_id = runner_id;
             }
         }
     };
