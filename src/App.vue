@@ -33,10 +33,10 @@
     import Loader from './components/Loader';
     import Sidebar from './components/Sidebar';
     import Runner from './components/Runner';
-    import NewComponent from './components/NoRunnerPlaceholder';
+    import NoRunnerPlaceholder from './components/NoRunnerPlaceholder';
 
     export default {
-        components: {NewComponent, Runner, Sidebar, Loader},
+        components: {NoRunnerPlaceholder, Runner, Sidebar, Loader},
         data() {
             return {
                 runners: {},
