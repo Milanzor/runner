@@ -5,23 +5,12 @@
             <v-container fluid>
                 <v-layout>
                     <v-flex xs12>
-                        <v-layout>
-                            <v-flex xs12 sm6>
-                                <v-card-actions>
-                                    <div class="text-xs-center">
-                                        <v-chip>{{runner_id}}</v-chip>
-                                    </div>
-                                    <div class="text-xs-center">
-                                        <v-chip>{{runner.path}}</v-chip>
-                                    </div>
-                                </v-card-actions>
-                            </v-flex>
-                        </v-layout>
-                        <v-card dark class="black monospace">
-                            <v-card-text class="log-container">
-                                <pre class="log"><template v-for="(message, key) in runner.log"><p v-bind:key="key">{{message}}</p></template></pre>
-                            </v-card-text>
-                        </v-card>
+                        <v-card-actions>
+                            <code>{{runner_id}}</code>&nbsp;<code>{{runner.path}}</code>
+                        </v-card-actions>
+                        <RunnerDetails :runner="runner" :runner_id="runner_id"/>
+                        <RunnerControls :runner="runner" :runner_id="runner_id"/>
+                        <RunnerLog :log="activeLog" v-if="activeLog.length"/>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -29,36 +18,22 @@
     </div>
 </template>
 <script>
+    import RunnerLog from './RunnerLog';
+    import RunnerDetails from './RunnerDetails';
+    import RunnerControls from './RunnerControls';
+
     export default {
         name: 'Runner',
+        components: {RunnerControls, RunnerDetails, RunnerLog},
         props: {
             runner: Object,
             runner_id: String
         },
         data() {
-            return {};
+            return {
+                activeLog: []
+            };
         },
-        methods: {
-            // runnerToggle() {
-            //     this.runner.active = !this.runner.active;
-            //     this.$emit('runnerToggle', [this.runner, this.runner.active]);
-            // }
-        }
+        methods: {}
     };
 </script>
-<style lang="scss">
-    .monospace {
-        font-family: monospace;
-    }
-
-    .log-container {
-
-        .log {
-            white-space: normal;
-            p {
-                font-size: 12px;
-                margin: -2px 0;
-            }
-        }
-    }
-</style>

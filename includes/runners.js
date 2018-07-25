@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const {spawn} = require('child_process');
-
+const EventEmitter = require('events');
 // Linerstream, Split a readable stream by newline characters
 const Linerstream = require('linerstream');
 
@@ -10,30 +10,17 @@ const ansiConverter = new Convert();
 
 const kill = require('tree-kill');
 
-module.exports = {
+class Runner extends EventEmitter {
 
-    /**
-     *
-     */
-    runners: {},
-
-    /**
-     *
-     */
-    configFile: null,
-
-    log: {},
-
-    /**
-     *
-     * @param configFile
-     */
-    initialize(configFile) {
-
+    constructor(configFile) {
+        super();
+        this.runners = {};
+        this.logLines = {};
+        this.configFile = configFile;
 
         // Fetch the runners config
         try {
-            let absPathConfigFile = path.resolve(configFile);
+            let absPathConfigFile = path.resolve(this.configFile);
             this.runners = require(absPathConfigFile);
             this.configFile = absPathConfigFile;
         } catch (e) {
@@ -70,29 +57,35 @@ module.exports = {
                 }
             });
         }
-    },
+    }
 
     /**
      *
      */
     getRunnerList() {
 
+        //
         let runnerList = {};
 
+        // Loop over all runners
         this._iterateRunners((runner_id, runner) => {
+
+            // Set runner
             runnerList[runner_id] = {
                 path: runner.path,
                 scripts: {}
             };
+
+            // Add all scripts
             Object.keys(runner.processes).forEach((script) => {
                 if (runner.processes.hasOwnProperty(script)) {
-                    runnerList[runner_id];
+                    runnerList[runner_id].scripts[script] = !!this.runners[runner_id].processes[script];
                 }
             });
         });
 
         return runnerList;
-    },
+    };
 
     /**
      *
@@ -103,7 +96,7 @@ module.exports = {
 
         let runner = this.runners[runner_id];
 
-        // It seems this is already spawned
+        // Check if this is already spawned
         if (runner.processes[script]) {
             return runner.processes[script];
         }
@@ -115,30 +108,34 @@ module.exports = {
         runnerProcess.stdout = runnerProcess.stdout.pipe(new Linerstream());
         runnerProcess.stderr = runnerProcess.stderr.pipe(new Linerstream());
 
-        this.log[runner_id] = [];
-
         // On stdout
         runnerProcess.stdout.on('data', (data) => {
+
+            // Ansi to HTML
             let logLine = ansiConverter.toHtml(data.trim());
+
             // No empty log line
             if (logLine) {
-                this.log[runner_id].push(logLine);
+                this.log(runner_id, script, logLine);
             }
         });
 
         // On stderr
         runnerProcess.stderr.on('data', (data) => {
+
+            // Ansi to HTML
             let logLine = ansiConverter.toHtml(data.trim());
+
             // No empty log line
             if (logLine) {
-                this.log[runner_id].push(logLine);
+                this.log(runner_id, script, logLine);
             }
         });
 
         // When the child process closes
         runnerProcess.on('close', (code) => {
-            let logLine = `RUNNER: ${runner_id} closed with code ${code}`;
-            this.log[runner_id].push(logLine);
+            let logLine = `RUNNER: ${runner_id}'s script ${script} closed with code ${code}`;
+            this.log(runner_id, script, logLine);
         });
 
         // Put the process in the runner list
@@ -146,7 +143,7 @@ module.exports = {
 
         // Return the process
         return runnerProcess;
-    },
+    };
 
     /**
      * Kills the running script of a runner
@@ -158,9 +155,32 @@ module.exports = {
         if (this.runners[runner_id].processes[script]) {
             kill(this.runners[runner_id].processes.pid);
             this.runners[runner_id].processes[script] = null;
-            this.log[runner_id] = [];
+            this._clearLog(runner_id, script);
         }
-    },
+    };
+
+    log(runner_id, script, logLine) {
+
+        // Make sure we have the right object
+        if (!(runner_id in this.logLines)) {
+            this.logLines[runner_id] = {};
+        }
+        if (!(script in this.logLines[runner_id])) {
+            this.logLines[runner_id][script] = [];
+        }
+
+        // Push this line into the log
+        this.logLines[runner_id][script].push(logLine);
+
+        // Emit the log-line event
+        this.emit('log-line', {runner_id: runner_id, script: script, logLine: logLine});
+    };
+
+    _clearLog(runner_id, script) {
+        if (runner_id in this.logLines && script in this.logLines[runner_id]) {
+            this.logLines[runner_id][script] = [];
+        }
+    }
 
     /**
      *
@@ -174,7 +194,7 @@ module.exports = {
             return require(absPackagePath);
         }
         return {};
-    },
+    };
 
     _iterateRunners(cb) {
 
@@ -193,5 +213,7 @@ module.exports = {
                 }
             });
         }
-    }
-};
+    };
+}
+
+module.exports = Runner;
