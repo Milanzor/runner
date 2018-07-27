@@ -79,7 +79,10 @@ class Runner extends EventEmitter {
             // Add all scripts
             Object.keys(runner.processes).forEach((script) => {
                 if (runner.processes.hasOwnProperty(script)) {
-                    runnerList[runner_id].scripts[script] = !!this.runners[runner_id].processes[script];
+                    runnerList[runner_id].scripts[script] = {
+                        active: !!this.runners[runner_id].processes[script],
+                        log: []
+                    };
                 }
             });
         });

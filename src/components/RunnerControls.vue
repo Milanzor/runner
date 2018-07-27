@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-btn :color="active ? 'success' : 'error'" @click="toggleRunnerScript">Toggle</v-btn>
+        <v-btn :color="activeState ? 'success' : 'error'" @click="toggleRunnerScript">Toggle</v-btn>
     </v-layout>
 </template>
 <script>
@@ -9,11 +9,16 @@
         props: {
             runner_id: String,
             script: String,
-            active: Boolean
+            active: true
+        },
+        data(){
+            return {
+                activeState: this.active,
+            }
         },
         methods: {
             toggleRunnerScript() {
-                this.active = !this.active;
+                this.activeState = !this.activeState;
                 this.$socket.emit('toggle-runner-script', {runner_id: this.runner_id, script: this.script, active: this.active});
             }
         }

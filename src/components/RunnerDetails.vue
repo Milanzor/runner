@@ -7,7 +7,7 @@
                 </v-card-title>
                 <v-tabs show-arrows hide-slider>
                     <v-tabs-slider></v-tabs-slider>
-                    <v-tab v-for="(active, script) in runner.scripts" :key="script" class="mx-3">
+                    <v-tab v-for="(active, script) in runner.scripts" :key="script" class="mx-3" @click="selectScript(script)">
                         {{script}}
                     </v-tab>
                 </v-tabs>
@@ -21,6 +21,11 @@
         props: {
             runner: Object,
             runner_id: String
+        },
+        methods: {
+            selectScript(script) {
+                this.$emit('scriptSelected', script);
+            }
         },
         mounted() {
         }

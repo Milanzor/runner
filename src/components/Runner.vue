@@ -8,9 +8,9 @@
                         <v-card-actions>
                             <code>{{runner_id}}</code>&nbsp;<code>{{runner.path}}</code>
                         </v-card-actions>
-                        <RunnerDetails :runner="runner" :runner_id="runner_id"/>
-                        <RunnerControls :runner="runner" :runner_id="runner_id"/>
-                        <RunnerLog :log="activeLog" v-if="activeLog.length"/>
+                        <RunnerDetails :runner="runner" :runner_id="runner_id" @scriptSelected="scriptSelected"/>
+                        <RunnerControls :runner="runner" :runner_id="runner_id" :script="script"/>
+                        <RunnerLog :log="log" v-if="log.length"/>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -31,9 +31,15 @@
         },
         data() {
             return {
-                activeLog: []
+                script: null,
+                log: []
             };
         },
-        methods: {}
+        methods: {
+            scriptSelected(script) {
+                this.script = script;
+                this.log = this.runner.scripts[script].log;
+            }
+        }
     };
 </script>

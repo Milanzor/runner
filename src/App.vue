@@ -61,10 +61,9 @@
         sockets: {
             'runner-list'(runners) {
                 this.runners = runners;
-                this.loading = false;
             },
             'log-line'(logOptions) {
-                this.runners[logOptions.runner_id][logOptions.script].log.push(logOptions.logLine);
+                this.runners[logOptions.runner_id].scripts[logOptions.script].log.push(logOptions.logLine);
             }
         },
         mounted() {
